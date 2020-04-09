@@ -1,0 +1,577 @@
+---
+title: "~Beave~R Tutorial"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: true
+    toc_depth: 3
+    theme: cosmo
+    number_sections: false
+---
+
+
+---
+Compiled by Grace Klinges
+
+PhD Student, Oregon State University
+
+Department of Microbiology, Vega Thurber Lab
+
+klingesj@oregonstate.edu
+
+March 2019
+
+#What is R?
+
+R is both a programming language and an environment designed for **data manipulation, analysis, and visualization**. One of the great benefits of R compared to classical statistics programs (Stata, SPSS, SAS and even MATLAB) is its flexibility. R is free and source code is open-source, unlike the “black box” model that other statistical software follows. This has encouraged the development of over 10,000 packages available through CRAN alone (i.e. excluding packages through BioConductor, Github, commercial R packages, and what is certainly an uncountable number of unpublished packages). Basically any analysis you would want to run has already been implemented by someone else and released as a package. 
+
+On top of that, R is a relatively simple language derived from S through which you could define any new function or analysis yourself. While many other statistical tools are point-and-click GUIs (graphical user interfaces) that can be initially more accessible, the output from R is more **transparent and replicable**, as R code can be saved, shared, and published for use in other studies. R can be run on Linux, MacOS, and Windows. 
+
+A working knowledge of R is essential for many types of biological data analysis, and we encourage you to keep exploring if this tutorial is your first introduction to R. There are some great intermediate and advanced tutorials on R that I will include under **Other Resources** at the end of this tutorial. 
+
+
+#Downloading R/RStudio
+
+For this tutorial, you will need **both R and RStudio**. R must be downloaded through the **“Comprehensive R Archive Network” (CRAN)**, which is a collection of mirrored (identical) sites holding the latest official R releases, copies of current source code as gzipped and bzipped tar files, contributed extensions and their code, prebuilt binaries for different operating systems, and documentation and bug tracking for R. 
+
+##R Download
+The CRAN master site is hosted through the Wirtschaftsuniversität Wien in Austria, and this site is mirrored to many other sites throughout the world. You should download R through the mirror closest to you geographically to equally distribute network load on the mirrors. Oregon State hosts two mirrors: 
+
+https://ftp.osuosl.org/pub/cran/
+
+http://ftp.osuosl.org/pub/cran/
+
+![Select your operating system, and go down to "Latest Release" and download the precompiled source binary (computer readable). As of the day I'm writing this tutorial, the current version is R-3.5.2, so I would click on R-3.5.2.pkg. ](R download 1.png)
+ 
+
+![](R download.png)
+
+##RStudio Download
+You will also need to download [RStudio](https://www.rstudio.com/products/rstudio/download/#download, {target="_blank"}), which is a **free, open source IDE** (integrated development environment) for R that allows the user to clearly view graphs, data tables, R code, and output all at the same time. This program requires R to already be installed locally.
+
+![](RStudio Download.png)
+
+##Getting around RStudio
+
+R studio has a **four-panel interface**, which better manages several R windows for typing commands, storing scripts, viewing command histories, viewing plots and more. You will end up doing most of your work in either the top left panel or the bottom left. 
+
+The **top left** panel is both the code editor, which allows you to write and run scripts with multiple lines of R code, and a file viewer, allowing you to view imported data and created objects. Note that if you don't have an R script or any files open, this panel will be collapsed and the bottom left panel will fill the screen. 
+
+The **bottom left** panel has tabs with an interactive R console and a command line terminal. Any code run from the top left panel will also show up in the console as it runs. We will be working in the Console for this tutorial, so whever I have code written in here, you can paste it into the Console tab and hit enter to run it.
+
+The **top right** panel shows your environment and your recent command history. Your environment consists of any objects in memory for a given project. In your command history, you can click on individual or multiple lines of code to send them to the console or code editor. The Connections tab shows any R extensions available on your system. 
+
+Finally, the **bottom right** panel shows your installed packages, organization of files in the directory assigned to the current workspace, a panel where data visualizations will be displayed (with arrows to navigate through previous plots, and options to export plots). This is also where any help files will show up when requested from the console. 
+
+It’s worth mentioning that the organization of these panes can be changed in *Preferences/Pane Layout*. 
+
+![My RStudio layout. Yours may look a bit different based on your selected preferences.](RStudio.png)
+
+#RStudio Workspace 
+What is the R workspace? This is the **current R working environment and any objects** that you are using (vectors, matrices, files, data frames, classes, lists, functions…etc). You can choose to save your workspace and reload it the next time you start R. You will probably want to save your projects in different directories (folders), or save associated projects in nested folders. If you have previous command line experience, you will find some of the basic R syntax to be the same (depending on the shell you normally use), while some functions will execute the same commands you are used to under a different name. 
+
+Try to do the commands in this tutorial as you go through it, it will help solidify the concepts and also double check that your R install is working properly :)
+
+
+##Navigation and Organization Commands
+`getwd()` prints current working directory (CWD) - this is the folder on your computer that R is saving data to.
+
+`setwd()` changes the location of your working directory. Try `setwd("Desktop")`. You can also click *Session/Set Working Directory/Choose Directory...* in the Toolbar.
+
+`list.files()` will list all files in the directory you are working in. 
+
+`ls()` or `objects()` lists objects in current workspace	
+
+`rm()` or `remove()`removes objects 
+
+`View()` lets you view an object you've created or imported. Double clicking on an object in the Environment tab will accomplish the same thing.
+
+##RStudio Projects
+RStudio is designed to help you organize your data analysis into **projects**.This allows you to save all the code and files from a group of analyses onto a directory on your computer. This way, R scripts associated with the project can be entirely **self-contained**: a script run from inside the project directory will have everything it needs, and won't touch any files outside that directory. Since the project is self-contained, the entire directory can be moved anywhere on your computer (or another person's computer) and will still work.
+
+You can create a **new project space** by going to File/New Project, and from there you can save and open the project like it was a document. 
+![Creating an RStudio Project. You can either start a project in a brand new directory or in an existing one ()](RStudio Projects.png)
+
+Using projects allows us to avoid using `setwd()` at the beginning of a script to tell the script where to work. While `setwd()` will work well on your computer, any paths you set will almost certainly not work for anyone else who wants to run the script (including yourself, two years from now when you've cleared out old folders you didn't think you needed). To make it work, the recipient of your script would have to change the paths to reflect where the project is on their computer. 
+
+Avoid this snafu entirely by keeping all relevant material to a project in the project directory. If you have multiple subdirectories within a project, make sure the top-level folder is named something descriptive of the project so the user of the project knows to launch R from this folder. This is where RStudio will save the `.Rproj` file that stores all the data for a project.
+
+See "Other Resources" at the end of this tutorial for more best practices tips. Using good R etiquette as early as possible avoids a mad rush to clean up your scripts when someone asks to see them!
+
+Start using R Projects as soon as possible. In fact, making a project for this tutorial wouldn't be a bad idea: that way, if you decide to return to this tutorial later, you'll have everything you need in one place.
+
+Let's make a **new project** called *R Tutorial*. I'll let you decide where you want to put the directory for this project on your computer, but I'd suggest a new directory rather than working in an existing directory. Once you've opened that project, download Pets_data.csv and pet_stats.csv and move them to that directory. We will be using them later in this tutorial.
+
+##Built in help functions 
+R has a built-in, comprehensive **help system**. Here are some useful commands. 
+
+`help.start()` --> general help
+
+`help("function")` --> help about a given function
+
+`?function` --> same as above
+
+`apropos("string")` --> list all functions containing a given string 
+
+`example("function")` --> show an example of function
+
+`RSiteSearch("string")` --> searches the R website for any function or string
+
+R also has a handy function called **vignettes**, which are interactive manuals written in rmarkdown that show up in the “Help” panel.
+
+`vignette()` --> lists all available vignettes for packages you have installed.
+
+`vignette("function")` --> provides the vignette for a given function.
+
+If any of the functions we use in this tutorial get confusing, just type in ? and the name of the function into the R console to get some help on using that function.
+
+#Basic R functions
+
+Before we get into the most basic R functins, some **essential R shortcuts**.
+The Tab button will attempt to autocomplete anything you are typing in the console or script editor, autofilling functions, objects, or file names.  
+
+In the interactive console, hitting the **up arrow** will show you your most recent command. Continuing to hit the up arrow will scroll through recent commands. Hitting *either* **Ctrl** or **Cmd** *and* the **up** arrow will show you a popup of recent commands you have executed, from which you can select a command and hit enter to run it. You can also see your command history in the History tab of the upper right panel, or running `history()` on the console.
+
+In the code editor panel (top left), hitting **Ctrl** and **Enter** will **execute the current line of code** from the editor. 
+
+To get familiar with how the interactive R console works, let’s try some **basic math** in the lower left panel. R can be used as a calculator, using `+`, `-` ,`*` (for multiplication) and `/` (for division)
+
+```{r}
+2+2
+```
+
+The [1] in front of the answer tells us that the answer had only 1 value. Eventually we will start seeing results with more than one value. 
+
+You can use R to conduct more complicated arithmetic, such as trigonometry, exponents, square roots, and logarithms. 
+
+```{r}
+sqrt(49)
+7^2
+cos(pi)
+```
+
+##R objects
+An **object** in R is a data structure having some attributes on which we can use methods. Anything you can work with in R is an object. 
+
+Create **new objects** in R using "<-". The syntax of this will always be the same; think **"object gets value"** to remember the order. 
+
+Let's start with variables, which contain just one value.
+```{r}
+example_variable <- 9
+```
+
+A good convention is to separate words with an "_" as spaces are not allowed. It's helpful to use delimitors purposefully, such as denoting the date of a file with dashes and appending the sample name with underscores; e.g. 2019-01-01_sample_01.txt, 2019-01-01_sample_02.txt.
+```{r echo=FALSE}
+this_is_easy <- 9
+thisishardtoread <- 9 
+this.is.fine.too <- 9 
+this_name_is_too_long_and_inconvenient <- 9 
+```
+```{r echo=T, results='hide'} 
+this_is_easy
+this.is.fine.too
+thisishardtoread
+this_name_is_too_long_and_inconvenient
+```
+
+Objects with names more than one word long are a great opportunity to use R's tab completion function. Once you've named an object, you can type the start of its name and hit "Tab," and R will autocomplete the function you are typing out from a popup list. If you don't want the first suggested function, just click on another function on the list that pops up as you type. 
+
+Another important note: R is **case-sensitive**. R may be pretty magical, but it can't read your mind and you must be precise in the instructions you give it.
+```{r error=TRUE }
+This_is_easy
+```
+
+
+Ok, let's create a new variable. You can do math with variables just as we did with numbers in the console.
+```{r}
+new_number <- 25
+new_number
+sqrt(new_number)
+```
+
+Writing out <- can be a pain. On a Mac, type "Option - ", on a PC type "Alt - ". [**Here**](https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts) is a list of other handy RStudio keyboard shortcuts.
+
+##Vectors 
+Vectors are another basic data structure in R, and contain elements of the same type. Possible data types for vectors: logical (also called boolean), integer, double, character, complex, or raw. R provides some basic functions to explore the features of vectors and other objects.
+
+`typeof()` - what is the R internal type of the object?
+  Running this command on a vector will produce one of the six data types listed above. Running this on other objects might produce "list", "NULL", "environment", or "S4" for formal classes.
+
+`class()`- what kind of object is it (higher level than `typeof()`)?
+
+`length()` - how long is it? What about two dimensional objects?
+
+`attributes()` - does it have any metadata?
+
+
+To **build vectors**, you will need to specify their content with `c()`. 
+```{r}
+x <- c(1,2,3,4,5)
+x
+```
+R can usually guess the appropriate storage mode for the vector. TRUE and FALSE will create a logical vector, quoted text will create a character vector.
+
+```{r}
+y <- c(TRUE, TRUE, FALSE, FALSE)
+length(y)
+typeof(y)
+```
+To **add elements** to a vector, just use `c()` as you did to build the vector. You are essentially overwriting the existing vector, so you'll need to specify you want to add the current elements of the vector by naming it. 
+
+```{r}
+x <- c(x, 19)
+x
+```
+You can also **add a sequence** of numbers to a vector, and **look up** the content of a vector at a specific element.
+
+```{r}
+numbers <- 1:100
+numbers[96:98] ## Brackets indicate the position within the vector we want to examine (called the index). Specify just one location or use a colon to look up the contents at a range of locations.
+```
+
+You can **perform arithmetic** on a vector much like you can on a variable, or even add a variable to a vector (this will add the variable to all elements in the vector).
+```{r}
+numbers - 1 ## Note that here we start to see other elements being labeled besides [1]. 
+## [24] tells us that that line starts with the 24th value of the vector.
+
+new_number
+new_number + numbers
+```
+All elements in a vector must be the **same data type**, or R will force all values to be the same.
+```{r}
+num <- c(1, 2, "three")
+num
+hmm <- c("TRUE", "FALSE", 3)
+hmm
+```
+
+##Matrices
+Another essential R data structure is matrices, which are **vectors with dimensions** provided by the number of rows and columns.
+```{r}
+m <- matrix(nrow = 2, ncol = 3)
+m
+dim(m) ## Reports dimensions as rows x columns.
+m2 <- matrix(c(1:3))
+m2
+```
+
+Matrices are a good demonstration of the function of `typeof()` vs. `class()`. Class(m) will tell us that it is a matrix, while typeof(m) will tell us that it is comprised of integer vectors.
+```{r}
+matrix1 <- matrix(1:6, nrow = 2, ncol = 3) ## This will fill a matrix of dimensions 2 x 3 with the numbers 1 through 6. Note that R fills the matrix by column first.
+matrix1
+matrix2 <- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE) ## Specify 'byrow = TRUE' to ask R to fill rows first. 
+matrix2
+
+cbind(num, hmm) ## cbind() will bind vectors into columns of a matrix. rbind() will bind vectors as rows.
+rbind(num, hmm)
+```
+Note that to bind together vectors, they must be the **same length** (check with `length()`) or weird things will start happening. In this case, a matrix was sucessfully generated, but because num was longer than the number of integers in range (3:4), R decided to repeat the vector to match the number of rows in the first column. Luckily, it warns us to let us know something sketchy is happening. 
+```{r}
+cbind(num, 3:4)
+```
+
+The command `as.matrix()` will allow you to express objects containing the same data type as a matrix. The parameter `mode=''` can be provided to specify the data type, e.g. 'numeric', 'character' or 'any'.
+
+
+##Lists
+Lists are like vectors, except that members of a list are not required to have the same data type. Lists can be created using `list()` or express other objects as lists using `as.list()`. 
+```{r}
+x <- list(10, "Shiela", TRUE)
+
+## Retrieve contents of list at a given element using double square brackets [[]]
+x[[2]]
+
+x <- 1:6
+x <- as.list(x)
+x
+```
+
+
+You can name elements of a list:
+```{r}
+sample_list <- c("Sample1", "Sample2", "Sample3", "Sample4", "Sample5", "Sample6")
+
+named_list <- list("Title" = "Sample_data", "Sample Names" = sample_list, Data = rnorm(1:6))
+named_list
+names(named_list)
+```
+
+
+If elements of a list are named, they can be accessed using `$`. 
+```{r}
+named_list$Data
+```
+
+##Data Frames
+A data frame is a special type of list where every element of the list must have the same length (or weird things happen, like with matrices). While matrices can only store data of one type, data frames are much more flexible and can contain multiple types. Basically, data frames are to lists what matrices are to vectors. Data frames are the fundamental data structure used by R and its packages. 
+
+Data frames are created using `data.frame()` or by importing data from outside R using functions such as `read.csv()` and `read.table()`. 
+We can assign attributes to a data frame with functions such as `rownames()` and `colnames()`. 
+We can convert a data frame to a matrix (provided all data are the same data type) using `data.matrix()` or `as.matrix()`. 
+   
+
+We can name elements of a data frame using the same conventions as used for lists. 
+```{r}
+df <- data.frame(sample_names = letters[1:10], Height = 1:10, Weight = 11:20)
+df
+```
+
+Two important functions you will want to know to understand a data frame are `dim()` and `str()`. `dim()` tells you the dimmensions (rows x columns) of your data frame, while `str()` tells you what the structure is. You can examine the structure of any R object and it will tell you what type of object it is and what data it holds, while you can only retrieve the dimensions of a 2-dimensional object (e.g. matrices or data frames).
+
+```{r}
+dim(df) ## Shows us that data frame df has 10 rows and 3 columns. Checking the dimensions of an object can be a good sanity check to make sure R is reading your data correctly.
+str(df) ## Tells us a little more about df: that df is a data frame, what the names of our columns are and what type of data each column holds. "Factor" tells us that our sample_names column holds categorical data, while "int" tells us that our height and weight columns hold integer data.
+```
+
+#Importing Datasets
+Now that we know what a data frame is, let's talk about getting your own data into R as a data frame so we can play around with it. 
+
+Remember that you can check which files exist in your current working directory with `list.files()`. If you want to import a file that is not in your working directory, you must provide the absolute path for that file. Running `file.choose()` will pop up a dialogue window to browse through files in your computer and will helpfully print the absolute path of whichever file you select. 
+
+Depending on the file type, you will use different R commands to import the file. 
+
+These **file import** functions are generally pretty self-explanatory:
+
+`read.csv()` imports a .csv (comma separated value) file.
+
+`read.delim()` imports a .tsv (tab separated value) file or tab delimited .txt file.
+
+`read.table()` is a generic table import function. 
+
+All of these functions have generally the same syntax, but have different default parameters. Let's take a look at the options for `read.table()` by using `?read.table()` to access the function documentation::
+
+    read.table(file, header = FALSE, sep = "", quote = "\"'",
+           dec = ".", numerals = c("allow.loss", "warn.loss", "no.loss"),
+           row.names, col.names, as.is = !stringsAsFactors,
+           na.strings = "NA", colClasses = NA, nrows = -1,
+           skip = 0, check.names = TRUE, fill = !blank.lines.skip,
+           strip.white = FALSE, blank.lines.skip = TRUE,
+           comment.char = "#",
+           allowEscapes = FALSE, flush = FALSE,
+           stringsAsFactors = default.stringsAsFactors(),
+           fileEncoding = "", encoding = "unknown", text, skipNul = FALSE)
+
+Woah, there are a lot. Let's focus on the parameters we are **most likely to alter**.
+
+`file` This is where you specify the name of the file to read from. Again, this assumes the file is located in your current working directory (`getwd()`), or else an absolute path must be specified.
+
+`header = ` The default setting for this, `header = FALSE`, means the first row of your table (usually the column names) has the same number of fields as the number of columns (you don't have a header line). You would want to set `header = TRUE` if the uppermost left field is empty, as is often true if your first column consists of row names. The default setting for `read.csv()` and `read.delim()` sets `header = TRUE`.
+
+`sep =` This is where you would specify what character separates fields in the file being read from. The default setting, `sep = ""`, means that the separator is any white space, i.e. spaces, tabs, newlines, or carriage returns. `read.csv()` and `read.delim()` differ from `read.table()` in that the default setting for `sep =` will be a comma and a tab, respectively.
+
+`row.names` and `col.names` allow you to provide a vector or row or column names or simply the column or row number of the table which contains the row or column names. If `header = TRUE` is passed, R will interpret the first column of the input file as the row names, and the first row as the column names. If there is no header line and `row.names` is empty, the rows will be numbered. If there is no header and `col.names` is empty, columns will not be labeled.
+
+These functions will import **tabular data** (created in Excel or a text editor, for example) as a data frame that we can manipulate in R. Note that the values in each column of the imported file must all be of the same data type.
+
+
+Let's try this out with some example data I've made up. This dataset about pets has a mixture of numeric and character columns.
+
+```{r}
+pets <- read.csv("Pets_data.csv")
+str(pets) # Recall that this command shows us the internal structure of an R object. 
+dim(pets)
+```
+Cool, our table was successfully imported as a data frame and has 9 rows and 5 columns. Let's get some more info on our new data frame.
+
+```{r}
+summary(pets)
+```
+Note that for categorical variables (such as species), R will report the number of entries matching a given category. For numerical variables (such as age), R performs some quick stats on the distribution of the data.
+
+We can also look more closely at different elements of the data frame.
+```{r}
+pets$Species
+class(pets$Species) 
+## This tells us that this variable has been imported as a "factor," the R term for a categorical variable.
+```
+Just like lists and vectors, we can view elements of a data frame by **indexing** the data frame at a given element with brackets `[]`. As data frames are two dimensional (like matrices) we will need to provide two coordinates to specify where to look. 
+
+```{r}
+pets[1,3]
+pets[1,] # We can see all rows, or all columns, if we leave either the row or column index empty.
+pets[1:3,1:2] # Indices themselves can be vectors containing multiple values.
+
+# Note that the following two commands produce very different outputs but differ only by a comma.
+pets[1:2] # This prints all rows for columns 1 and 2. pets[,1:2] would produce the same output.
+pets[1:2,] # This prints all columns for rows 1 and 2.
+```
+
+`head()` is a super useful shortcut for viewing data that prints the **first six rows** of a data frame. The parameter `n = ` can be added to change the number of rows printed.
+```{r}
+head(pets)
+head(pets, n = 2)
+```
+
+We can also examine data using a description of their content with a **logical test**. This asks R to return a vector of TRUE or FALSE for each row in the data frame. This logical test can be performed with the inequality symbols `>` and `<`, as well as `==` to search for an *exact* match.  
+```{r}
+pets$Age..yrs. > 2 # Which rows (pets) have an age greater than 2 years? Not super informative as it doesn't tell us anything about those rows.
+pets[pets$Age..yrs. > 2, ] # Prints the rows for which age is greater than 2 years. Remember that we need to include a comma and an empty value for column to print all columns. We could also index to show which columns we want, e.g. [1:4]
+pets[pets$Species == "Felis catus", ] # Print all rows for which species exactly matches Felis catus.
+```
+
+For **partial matches**, we can use the `grep()` function. 
+
+```{r}
+pets[grep("Canis", pets$Species),] # Search for the string "Canis" in the species column, print all rows which contain "Canis"
+```
+
+There are tons of other ways to look at your data frames, but these basics will be enough to get you started.
+If you want to learn more about data frames, here are some **helpful links**. 
+
+[More on ordering and sorting data frames by Mark Dunning ](https://bioinformatics-core-shared-training.github.io/r-crash-course/crash-course.nb.html#ordering_and_sorting)
+
+[Working with matrices, arrays, and data frames by Steven Buechler](https://www3.nd.edu/~steve/Rcourse/Lecture2v1.pdf)
+
+
+#Visualizations
+
+So we were able to import our external data file into R and check out some basic information about it. But wouldn't a plot be much more descriptive?
+
+We can do some **basic plotting** with the `plot()` function and its extensions, all of which come with a basic R install.
+
+`hist()` and `plot()` work pretty much the way you'd expect them to. `hist()` requires just one vector of values to produce a histogram, showing the frequency of counts of each value in the vector. Recall that the syntax to call a column of the data is **name of object$name of column**. 
+
+```{r}
+hist(pets$Age_yrs)
+```
+
+`plot()` produces an x-y plot when provided with two vectors in the format `plot(x,y)`, again calling columns using object name$column. Remember you can use Tab to complete R's suggestions for object or column names.
+```{r}
+plot(pets$Age_yrs, pets$Weight_kg)
+```
+
+
+Let's put some axis labels on this plot so it looks more presentable.
+```{r}
+plot(pets$Age_yrs, pets$Weight_kg, xlab = "Age", ylab = "Weight in kg", main = "Pet Weights by Age")
+```
+
+This works but its not very exciting as there are no obvious trends in our data, and Roger the horse is throwing off any association we might see between pet age and weight. Let's look instead at some statistics on the population of domestic pets in the US from two years, ten years apart.
+
+First, read in the provided .csv file called pet_stats.csv. Let's **summarize the dataset** to get a quick glance at the data structure. 
+
+```{r}
+pet_stats <- read.csv("pet_stats.csv")
+summary(pet_stats)
+```
+
+Make a plot: you know the drill by now. Let's add some informative labels, too. 
+```{r}
+plot(pet_stats$Year,pet_stats$Dog, xlab = "Year", ylab = "US Dog Population (millions)", main = "Dog Ownership in the US by Year")
+```
+
+What if we want to compare dog and cat populations across the years to look for trends in pet ownership? One of the unique features of R plots is that we can add information to an existing plot without starting all over. Let's add more points to our plot using the function `points()`.
+
+```{r}
+plot(pet_stats$Year,pet_stats$Dog, xlab = "Year", ylab = "US Pet Population (millions)", main = "Pet Ownership in the US by Year",col="red", pch=16) ## Here, we can change the color of the points we are adding so we can distinguish them by data type. Let's make our Dog data red. "pch" means plotting character. I just don't like the way R's default points look.
+points(pet_stats$Year,pet_stats$Cat,col="blue", pch=16) #Let's make our Cat data blue. 
+```
+
+Huh, it looks like some of our Cat data points are getting cut off. This is because we defined the limits of our y axis using the population range for dog ownership. Since R adds elements to a plot in order, we aren't rebuilding the graph once we add our cat statistics, just adding points to an existing plot.
+
+More people in the US own cats than dogs, so we will have to increase our upper bound for our y axis. We can check the summary we produced earlier to see what the maximum value was for cat population. 
+
+```{r}
+plot(pet_stats$Year,pet_stats$Dog, xlab = "Year", ylab = "US Pet Population (millions)", 
+     main = "Pet Ownership in the US by Year",
+     col="red", pch=16, ylim=c(65,96)) # This sets the y axis range to the minimum value for dogs and the maximum value for cats. 
+points(pet_stats$Year,pet_stats$Cat,col="blue", pch=16)
+```
+
+OK, one last thing. Since we wanted to observe the trends in pet ownership for both cats and dogs, let's add a **linear regression** line to this plot. This can be done with the function `abline()`, which adds straight lines to a plot. Inside this command, we will nest the function `lm()`, which calculates a linear regression analyzing the relationship between your response variable (y) and your explanatory variable (x).
+
+First, let's view the linear regression statistics. We're going to ask R for a summary of our regression statistics using `summary()`. Enter ?summary in the R console to learn more about that function. 
+
+Inside the summary function we will nest the `lm()` function to fit a linear model to our data. 
+
+```{r}
+summary(lm(pet_stats$Dog ~ pet_stats$Year)) # The ~ symbol means that we are asking lm() to find a relationship between our response variable (dog population in the US) and our explanatory variable (year). 
+```
+
+Cool! The R-squared value for this regression was 0.785, which suggests that there is a linear relationship between dog population in the US and year, albeit not a very strong one. Let's see how that regression looks on our plot.
+
+```{r}
+plot(pet_stats$Year,pet_stats$Dog, xlab = "Year", ylab = "US Pet Population (millions)", 
+     main = "Pet Ownership in the US by Year",
+     col="red", pch=16, ylim=c(65,96))
+points(pet_stats$Year,pet_stats$Cat,col="blue", pch=16)
+abline(lm(pet_stats$Dog~pet_stats$Year), col="red") ## Add a red line of best fit to show trends for our dog data over time.
+abline(lm(pet_stats$Cat~pet_stats$Year), col="blue") ## Add a blue line to show trends for our cat data, using the same linear regression function but with cat population as the response variable.
+```
+
+And there you have it! You've just made a plot from scratch showing trends in dog and cat populations in the US over the last few years. There's one more thing we should add to this graph, but we're going to need to learn about packages before we can do that. 
+
+#Packages
+So far, all of the functions we have used have been part of the **base distribution** of R. As I mentioned in the introduction to this tutorial, one of the great things about R is that it is open-source and the developers encourage others to publish their own functions to add to the R repertoire. There are many packages specific to bioinformatic analysis, in addition to tons that have been developed for statistical analysis and data visualization. Right now, I'm using a package called `rmarkdown` to combine R code and text into HTML format for this tutorial!
+
+The two most useful *repositories* for our field are CRAN and Bioconductor. Go ahead and **install Bioconductor** yourself right now, you'll need it later:
+
+    if (!requireNamespace("BiocManager"))
+      install.packages("BiocManager")
+    BiocManager::install()
+
+That is also the basic syntax for **installing Bioconductor packages**, but you will add the name of the package you want in the last line between the parentheses.
+
+Here's how to **install DESeq2**, for example. We will use DESeq2 to examine differential gene expression for this class. 
+
+    if (!requireNamespace("BiocManager"))
+        install.packages("BiocManager")
+    BiocManager::install("DESeq2")
+
+The basic syntax for **installing packages with CRAN** is:
+`install.packages("packagename")`
+
+To see packages you have already installed, type `installed.packages()` or go to the Packages tab in the lower right panel of RStudio.
+
+You can update packages using `update.packages()`, which will attempt to update all packages. Remove packages using `remove.packages("packagename")`.
+
+Now that we know what R packages are, let's try one we haven't used yet. This package, the R Graphics Package, comes with R when we download it, but we need to make sure R knows how to call the functions in that package.
+
+In order to **run an installed package**, you will need to add it to your library each time you restart RStudio using `library("packagename")`, or by finding it in the Packages tab and clicking the checkbox next to the package name. 
+```{r}
+library(graphics)
+```
+
+Great, this package will allow us to add a legend to our pet populations graph. 
+```{r eval=FALSE, include=TRUE}
+legend("bottomright", legend = c("Cats", "Dogs"), col = c("blue", "red"), pch=16) # This will allow us to add a legend in the top right corner, using the names Cats and Dogs matching the colors and symbol we had previously assigned our data. Remember we can use c() to create a vector of multiple values. 
+```
+```{r echo=FALSE}
+plot(pet_stats$Year,pet_stats$Dog, xlab = "Year", ylab = "US Pet Population (millions)", 
+     main = "Pet Ownership in the US by Year",
+     col="red", pch=16, ylim=c(65,96))
+points(pet_stats$Year,pet_stats$Cat,col="blue", pch=16)
+abline(lm(pet_stats$Dog~pet_stats$Year), col="red") ## Add a red line of best fit to show trends for our dog data over time.
+abline(lm(pet_stats$Cat~pet_stats$Year), col="blue") ## Add a blue line to show trends for our cat data, using the same linear regression function but with cat population as the response variable.
+legend("bottomright", legend = c("Cats", "Dogs"), col = c("blue", "red"), pch=16) # This will allow us to add a legend in the top right corner, using the names Cats and Dogs matching the colors and symbol we had previously assigned our data. Remember we can use c() to create a vector of multiple values. 
+```
+
+That looks pretty good to me! 
+
+[Here](https://support.rstudio.com/hc/en-us/articles/201057987-Quick-list-of-useful-R-packages) is a list of useful general R packages. [Awesome R](https://awesome-r.com/index.html) is a curated list of useful R packages. [Here](https://www.bioconductor.org/packages/stats/) is the list of the top 75 most downloaded Bioconductor packages.  
+
+Here are some tools I use a lot for bioinformatic analysis:
+
+CRAN: dplyr, ggplot2, pheatmap, tidyverse, vegan
+
+Bioconductor: biomformat, edgeR, GenomeInfoDb, phyloseq, Rsamtools
+
+#Other Resources
+**There are tons of other great R tutorials, cookbooks, and cheat sheets out there:**
+
+Solutions to common tasks and problems in analyzing data in R: [Cookbook for R](http://www.cookbook-r.com){target="_blank"}
+
+Little out of date but comprehensive (nearly 200 pages): [Little Book of R for Bioinformatics](https://media.readthedocs.org/pdf/a-little-book-of-r-for-bioinformatics/latest/a-little-book-of-r-for-bioinformatics.pdf){target="_blank"}
+
+Really great bioinformatics-focused R crash course by Mark Dunning: [R Crash Course](https://bioinformatics-core-shared-training.github.io/r-crash-course/crash-course.nb.html){target="_blank"} 
+
+[RStudio Bank of cheatsheets](https://www.rstudio.com/resources/cheatsheets/){target="_blank"}  
+
+[Best practices for Data Projects in R](https://kkulma.github.io/2018-03-18-Prime-Hints-for-Running-a-data-project-in-R/) from Kasia Kulma 
+
+Jenny Bryan's [_What They Forgot to Teach You About R_](https://whattheyforgot.org/){target="_blank"} (and [Github Version)](https://github.com/jennybc/what-they-forgot){target="_blank"}
+
+More tips from Jenny about projects and organization [Project-oriented workflow](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/)
+
+Basically anything written by the King of R, Hadley Wickham, [for instance his Advanced R Book](http://adv-r.had.co.nz/Style.html){target="_blank"}
